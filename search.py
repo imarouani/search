@@ -3,6 +3,7 @@ from whoosh.index import open_dir
 from whoosh.qparser import QueryParser, FuzzyTermPlugin
 import os
 
+
 app = Flask(__name__)
 
 # Whoosh index directory
