@@ -79,6 +79,7 @@ import traceback
 def internal_error(exception):
    return "<pre>"+traceback.format_exc()+"</pre>"
 
+
 @app.route("/")
 def home():
     """Home page with a search form."""
