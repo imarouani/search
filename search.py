@@ -94,4 +94,4 @@ def search_page():
     return render_template("results.html", query=query, results=results)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
