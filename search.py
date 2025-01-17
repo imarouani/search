@@ -5,7 +5,7 @@ from whoosh.qparser import QueryParser, FuzzyTermPlugin
 import os
 
 app = Flask(__name__)
-app.config['APPLICATION_ROOT'] = '/u051/'
+app.config['APPLICATION_ROOT'] = '/u051'
 
 # Whoosh index directory
 index_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "whoosh_index")
