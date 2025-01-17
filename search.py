@@ -84,18 +84,18 @@ def internal_error(exception):
 @app.route("/")
 def home():
     """Home page with a search form."""
-    return render_template("index.html")
+    return render_template("Templates/index.html")
 
 @app.route("/search")
 def search_page():
     """Process the search query and return results."""
     query = request.args.get("q", "").strip()  # Get the query parameter from the URL
     if not query:
-        return render_template("index.html", error="Please enter a search query.")
+        return render_template("Templates/index.html", error="Please enter a search query.")
 
     results, error = search(query)
     if error:
-        return render_template("index.html", error=error)
+        return render_template("Templates/index.html", error=error)
 
     return render_template("results.html", query=query, results=results)
 
