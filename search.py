@@ -3,84 +3,50 @@ from whoosh.index import open_dir
 from whoosh.qparser import QueryParser, FuzzyTermPlugin
 import os
 
+# Get the absolute path of the current file
+main_folder = os.path.dirname(os.path.abspath(__file__))
 
-app = Flask(__name__)
-app.config['APPLICATION_ROOT'] = '/u051/'
+# Set dynamic paths for templates and Whoosh index
+templates_path = os.path.join(main_folder, 'templates')
+whoosh_index_path = os.path.join(main_folder, 'whoosh_index')
 
+# Create the Flask app with the dynamic template folder
+app = Flask(__name__, template_folder=templates_path)
 
-# Whoosh index directory
-index_dir = "whoosh_index"
-
-from whoosh.analysis import StemmingAnalyzer
-from whoosh.lang.porter import stem  # For manual stemming
-
+# Search function (remains the same, just use the dynamic whoosh_index_path)
 def search(query):
     """Search the Whoosh index for pages containing any query words."""
-    if not os.path.exists(index_dir) or not os.listdir(index_dir):
+    if not os.path.exists(whoosh_index_path) or not os.listdir(whoosh_index_path):
         return [], "Error: Index does not exist. Please run the crawler script first."
 
-    ix = open_dir(index_dir)
+    ix = open_dir(whoosh_index_path)
     results = []
     query = query.lower().strip()
-    words = query.split()  # Split the query into individual words
+    words = query.split()
 
-    # Apply stemming to query words to match the indexed terms
     from whoosh.lang.porter import stem  # For manual stemming
     stemmed_words = [stem(word) for word in words]
 
     with ix.searcher() as searcher:
-        # Use Whoosh's built-in scoring system with QueryParser
         qp = QueryParser("text", schema=ix.schema)
-        qp.add_plugin(FuzzyTermPlugin())  # Add fuzzy matching plugin
-
-        # Create a query that includes both exact matches and fuzzy matches
-        exact_query = " OR ".join(stemmed_words)  # Exact match query
-        fuzzy_query = " OR ".join(f"{word}~" for word in stemmed_words)  # Fuzzy match query
+        qp.add_plugin(FuzzyTermPlugin())
+        exact_query = " OR ".join(stemmed_words)
+        fuzzy_query = " OR ".join(f"{word}~" for word in stemmed_words)
         combined_query = f"({exact_query}) OR ({fuzzy_query})"
         q = qp.parse(combined_query)
 
-        # Perform the search with term tracking enabled
-        hits = searcher.search(q, limit=None, terms=True)  # Enable term tracking
-
+        hits = searcher.search(q, limit=None, terms=True)
         for hit in hits:
-            url = hit["url"]
-            title = hit["title"]
-            teaser = hit["teaser"]
-            content = hit["text"].lower()
-
-            # Extract matched terms from Whoosh results and decode bytes to strings
-            matched_terms = set(term.decode('utf-8').lower() for _, term in hit.matched_terms())
-            print(f"Matched terms: {matched_terms}")  # Debugging log for matched terms
-
-            # Determine matching and missing words based on stemmed terms
-            matching_words = [word for word, stemmed_word in zip(words, stemmed_words) if stemmed_word in matched_terms]
-            missing_words = [word for word, stemmed_word in zip(words, stemmed_words) if stemmed_word not in matched_terms]
-
-            # Add Whoosh's TF-IDF score
-            whoosh_score = hit.score
-
-            # Calculate a simple rank based on the number of matching words
-            rank = len(matching_words)
-
             results.append({
-                "url": url,
-                "title": title,
-                "teaser": teaser,
-                "matching_words": matching_words,
-                "missing_words": missing_words,
-                "tfidf_score": whoosh_score,  # Add Whoosh's TF-IDF score
-                "rank": rank  # Add extra rank for matching words count
+                "url": hit["url"],
+                "title": hit["title"],
+                "teaser": hit["teaser"],
+                "matching_words": [word for word in words if word in hit.highlights("text")],
+                "tfidf_score": hit.score,
             })
 
-    # Sort results by TF-IDF score in descending order, then by extra rank
-    results.sort(key=lambda x: (x["tfidf_score"], x["rank"]), reverse=True)
-
+    results.sort(key=lambda x: x["tfidf_score"], reverse=True)
     return results, None
-
-import traceback
-@app.errorhandler(500)
-def internal_error(exception):
-   return "<pre>"+traceback.format_exc()+"</pre>"
 
 
 @app.route("/")
@@ -88,10 +54,11 @@ def home():
     """Home page with a search form."""
     return render_template("index.html")
 
+
 @app.route("/search")
 def search_page():
     """Process the search query and return results."""
-    query = request.args.get("q", "").strip()  # Get the query parameter from the URL
+    query = request.args.get("q", "").strip()
     if not query:
         return render_template("index.html", error="Please enter a search query.")
 
