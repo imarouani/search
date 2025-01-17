@@ -8,7 +8,7 @@ app = Flask(__name__)
 #app.config['APPLICATION_ROOT'] = '/u051/'
 
 # Whoosh index directory
-index_dir = "whoosh_index"
+index_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "whoosh_index")
 from whoosh.analysis import StemmingAnalyzer
 from whoosh.lang.porter import stem  # For manual stemming
 def search(query):
