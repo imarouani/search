@@ -74,6 +74,10 @@ def search(query):
 
     return results, None
 
+import traceback
+@app.errorhandler(500)
+def internal_error(exception):
+   return "<pre>"+traceback.format_exc()+"</pre>"
 
 @app.route("/")
 def home():
