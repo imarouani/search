@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, url_for
 from whoosh.index import open_dir
 from whoosh.qparser import QueryParser, FuzzyTermPlugin
 import os
