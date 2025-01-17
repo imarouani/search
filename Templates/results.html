@@ -95,7 +95,8 @@
 <body>
     <header>
         <h1> Results page </h1>
-        <form action="{{ url_for('home') }}" method="get">
+        <form action="{{ url_for('home', _external=True) }}" method="get">
+
             <input type="text" name="q" placeholder="Search again..." required>
             <button type="submit">Search</button>
         </form>

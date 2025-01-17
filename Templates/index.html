@@ -54,7 +54,7 @@
 <body>
     <div class="container">
         <h1>Search Engine 39</h1>
-        <form action="{{ url_for('search_page') }}" method="get">
+        <form action="{{ url_for('search_page', _external=True) }}" method="get">
             <input type="text" name="q" placeholder="Enter your search query" required>
             <button type="submit">Search</button>
         </form>
