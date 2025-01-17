@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        header {
+            background-color: #007BFF;
+            color: white;
+            text-align: center; /* Center horizontally */
+            padding: 15px 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            line-height: 1.5;
+        }
+        header form {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+        }
+        header input[type="text"] {
+            padding: 10px;
+            width: 300px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        header button {
+            padding: 10px 20px;
+            background-color: white;
+            color: #007BFF;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        header button:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        .result {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .result-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #007BFF;
+            text-decoration: none;
+        }
+        .result-title:hover {
+            text-decoration: underline;
+        }
+        .result-url {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .result-teaser {
+            font-size: 14px;
+            color: #333;
+            margin-top: 10px;
+        }
+        .missing-words {
+            font-size: 14px;
+            color: #FF5733; /* Orange color to indicate missing words */
+            margin-top: 5px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1> :) </h1>
+        <form action="/search" method="get">
+            <input type="text" name="q" placeholder="Search again..." required>
+            <button type="submit">Search</button>
+        </form>
+    </header>
+    <div class="container">
+        <h1>Search Results for "{{ query }}"</h1>
+        {% if results %}
+            {% for result in results %}
+                <div class="result">
+                    <a class="result-title" href="{{ result['url'] }}" target="_blank">{{ result['title'] }}</a>
+                    <div class="result-teaser">{{ result['teaser'] }}</div> <!-- Display the teaser -->
+                    {% if result['missing_words'] %}
+                        <div class="missing-words">Missing words: {{ result['missing_words'] | join(', ') }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No results found for your query.</p>
+        {% endif %}
+    </div>
+    <footer>
+        &copy; 2025 - group 39 Search Labs.
+    </footer>
+</body>
+</html>
