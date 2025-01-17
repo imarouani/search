@@ -5,7 +5,7 @@ import os
 
 
 app = Flask(__name__)
-app.config['APPLICATION_ROOT'] = '/u051/search_engine.wsgi'
+app.config['APPLICATION_ROOT'] = '/u051/'
 
 
 # Whoosh index directory
